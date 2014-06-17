@@ -5,21 +5,53 @@ import play.api.mvc._
 import services.HackerSchoolAPI
 import play.api.libs.ws.Response
 import scala.concurrent.Future
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.format.Formats._
+import play.Play
+import play.api.libs.json.JsValue
 
 object Application extends Controller {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
+  case class HSLoginData(username: String, password: String)
+
+  val hsLoginForm = Form (
+    mapping (
+      "username" -> nonEmptyText,
+      "password" -> nonEmptyText
+    ) (HSLoginData.apply)(HSLoginData.unapply)
+  )
+
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index()).withHeaders( "Access-Control-Allow-Origin" -> "*")
   }
 
-  def getAllTwitterAccounts = Action.async {
+  //  def getAllTwitterAccounts() = Action.async {
+  //    val username = Play.application().configuration().getString("hs.username")
+  //    val password = Play.application().configuration().getString("hs.password")
+  //
+  //    retrieveAllTwitterAccounts(username, password)
+  //  }
 
-    val hackerSchoolAccounts: Future[Response] = HackerSchoolAPI.scrapeAllTwitterAccounts()
+  def login = Action.async { implicit request =>
 
-    hackerSchoolAccounts.map(response => Ok("WOOOOO " + HackerSchoolAPI.generateJSONResponse(response) ))
+    val userCredentials = hsLoginForm.bindFromRequest.get
 
+    retrieveAllTwitterAccounts(userCredentials.username, userCredentials.password)
+
+    //I would prefer to do the following so I can handle errors but don't know how to deal with the different types :/
+    //    hsLoginForm.bindFromRequest.fold(
+    //      formWithErrors => BadRequest("Error logging in"),
+    //      login => Redirect(routes.Application.getAllTwitterAccounts())
+    //    )
   }
 
+  def retrieveAllTwitterAccounts(username: String, password: String): Future[SimpleResult] = {
+    val hackerSchoolAccounts: Future[Response] = HackerSchoolAPI.scrapeAllTwitterAccounts(username, password)
+
+    val result: Future[SimpleResult] = hackerSchoolAccounts.map(response => Ok(HackerSchoolAPI.generateJSONResponse(response)).as("application/json").withHeaders( "Access-Control-Allow-Origin" -> "*"))
+    result
+  }
 }

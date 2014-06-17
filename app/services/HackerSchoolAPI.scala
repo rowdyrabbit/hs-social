@@ -61,26 +61,18 @@ object HackerSchoolAPI {
     }
   }
 
-  def scrapeAllTwitterAccounts() : Future[Response] = {
+  def scrapeAllTwitterAccounts(username: String, password: String) : Future[Response] = {
 
     val response: Future[Response] = for {
       loginPageResp <- WS.url("https://www.hackerschool.com/login").get()
       loginPostResp <- WS.url("https://www.hackerschool.com/sessions")
-                        .withHeaders("Content-Type" -> "application/x-www-form-urlencoded",
-                                     "User-Agent" -> "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36",
-                                     "Cookie" -> loginPageResp.cookies.toString()
-                         )
-                        .post("utf8=%E2%9C%93&authenticity_token=" + extractAuthToken(loginPageResp) + "&email=" + Play.application().configuration().getString("hs.username") + "&password=" + Play.application().configuration().getString("hs.password") + "&commit=Log+in")
+        .withHeaders("Content-Type" -> "application/x-www-form-urlencoded",
+          "User-Agent" -> "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36",
+          "Cookie" -> loginPageResp.cookies.toString()
+        )
+        .post("utf8=%E2%9C%93&authenticity_token=" + extractAuthToken(loginPageResp) + "&email=" + username + "&password=" + password + "&commit=Log+in")
 
     } yield loginPostResp
-
-//    response onSuccess {
-//      case resp => {
-//
-//      }
-//    }
-//
-//   Json.parse("")
     response
   }
 
@@ -92,9 +84,9 @@ object HackerSchoolAPI {
     import scala.collection.JavaConversions._
     val allBatches = batchContent.children().select("ul")
     for (batch <- allBatches) {
-    val b : Batch = buildBatch(batch)
-    batchList = batchList :+ b
-  }
+      val b : Batch = buildBatch(batch)
+      batchList = batchList :+ b
+    }
     //then convert to JSON and return it
     val json = Json.toJson(batchList)
     json

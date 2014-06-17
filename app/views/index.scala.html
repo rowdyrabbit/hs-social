@@ -1,7 +1,17 @@
-@(message: String)
+@main("Login to Hacker School") {
 
-@main("Welcome to Play") {
-
-    @play20.welcome(message)
+    <form action="@routes.Application.login()" method="post">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+        </div>
+        <div class="buttons">
+            <button type="submit">Log In</button>
+        </div>
+    </form>
 
 }
