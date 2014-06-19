@@ -5,19 +5,7 @@
 # Home page
 GET            /                              controllers.Application.index
 
-GET            /only-twitter                  controllers.Twitter.onlyTwitter
-
-
 POST           /login                         controllers.Application.login
-
-# Providers entry points
-GET            /authenticate/:provider        securesocial.controllers.ProviderController.authenticate(provider)
-POST           /authenticate/:provider        securesocial.controllers.ProviderController.authenticateByPost(provider)
-GET            /not-authorized                securesocial.controllers.ProviderController.notAuthorized
-
-# Login page
-GET     /login                                securesocial.controllers.LoginPage.login
-GET     /logout                               securesocial.controllers.LoginPage.logout
 
 
 OPTIONS        /*all                          controllers.Application.preflight(all: String)

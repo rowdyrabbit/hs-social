@@ -1,14 +1,9 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
 import services.HackerSchoolAPI
 import play.api.libs.ws.Response
 import scala.concurrent.Future
-import play.api.data._
-import play.api.data.Forms._
-import play.api.data.format.Formats._
-import play.Play
 import play.api.libs.json.{JsString, Json, JsValue}
 
 object Application extends Controller {
@@ -16,7 +11,7 @@ object Application extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def index = Action {
-    Ok(views.html.index()).withHeaders( "Access-Control-Allow-Origin" -> "*")
+    Ok(views.html.index())
   }
 
   //  def getAllTwitterAccounts() = Action.async {
@@ -26,8 +21,9 @@ object Application extends Controller {
   //    retrieveAllTwitterAccounts(username, password)
   //  }
 
-  def login = Action.async { implicit request =>
+  
 
+  def login = Action.async { implicit request =>
 
     val body = request.body
     val json: JsValue = body.asJson.get
