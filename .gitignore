@@ -2,6 +2,7 @@ logs
 project/project
 project/target
 conf/application-prod.conf
+conf/securesocial.conf
 target
 tmp
 .history
