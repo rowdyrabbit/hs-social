@@ -29,35 +29,12 @@ object HackerSchoolAPI {
     )
   }
 
-
-
   def extractAuthToken(response: ws.Response): String = {
     val body = response.body;
     val doc = Jsoup.parse(body);
     doc.select("[name=authenticity_token]").first().`val`()
   }
 
-  def buildBatch(batchElement: Element): Batch = {
-    val batchName :String = batchElement.attr("id");
-    val batch : Batch = new Batch(batchName, batchName);
-    import scala.collection.JavaConversions._
-    val batchlings : Elements = batchElement.getElementsByTag("li");
-    for (currPerson: Element <- batchlings) {
-      batch.addBatchling(currPerson.select("div.name > a").text(), getTwitterHandle(currPerson));
-    }
-    return batch
-  }
-
-  def getTwitterHandle(batchling : Element) : String =  {
-    val twitterLink : Element = batchling.select("[href*=twitter.com]").first();
-    if (twitterLink != null) {
-      val twitterUrl : String = twitterLink.attr("href");
-      val twitterHandle : String = twitterUrl.substring(twitterUrl.lastIndexOf("/") + 1, twitterUrl.length());
-      return twitterHandle;
-    } else {
-      return null;
-    }
-  }
 
   def scrapeAllTwitterAccounts(username: String, password: String) : Future[Response] = {
 
@@ -88,6 +65,28 @@ object HackerSchoolAPI {
     //then convert to JSON and return it
     val json = Json.toJson(batchList)
     json
+  }
+
+  def buildBatch(batchElement: Element): Batch = {
+    val batchName :String = batchElement.attr("id");
+    val batch : Batch = new Batch(batchName, batchName);
+    import scala.collection.JavaConversions._
+    val batchlings : Elements = batchElement.getElementsByTag("li");
+    for (currPerson: Element <- batchlings) {
+      batch.addBatchling(currPerson.select("div.name > a").text(), getTwitterHandle(currPerson));
+    }
+    return batch
+  }
+
+  def getTwitterHandle(batchling : Element) : String =  {
+    val twitterLink : Element = batchling.select("[href*=twitter.com]").first();
+    if (twitterLink != null) {
+      val twitterUrl : String = twitterLink.attr("href");
+      val twitterHandle : String = twitterUrl.substring(twitterUrl.lastIndexOf("/") + 1, twitterUrl.length());
+      return twitterHandle;
+    } else {
+      return null;
+    }
   }
 
   class Batchling(val name: String, val twitterHandle: String) {
