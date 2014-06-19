@@ -9,20 +9,11 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 import play.Play
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsString, Json, JsValue}
 
 object Application extends Controller {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
-
-  case class HSLoginData(username: String, password: String)
-
-  val hsLoginForm = Form (
-    mapping (
-      "username" -> nonEmptyText,
-      "password" -> nonEmptyText
-    ) (HSLoginData.apply)(HSLoginData.unapply)
-  )
 
   def index = Action {
     Ok(views.html.index()).withHeaders( "Access-Control-Allow-Origin" -> "*")
@@ -37,9 +28,14 @@ object Application extends Controller {
 
   def login = Action.async { implicit request =>
 
-    val userCredentials = hsLoginForm.bindFromRequest.get
 
-    retrieveAllTwitterAccounts(userCredentials.username, userCredentials.password)
+    val body = request.body
+    val json: JsValue = body.asJson.get
+
+    val username = (json \ "username").as[JsString].value
+    val password = (json \ "password").as[JsString].value
+
+    retrieveAllTwitterAccounts(username, password)
 
     //I would prefer to do the following so I can handle errors but don't know how to deal with the different types :/
     //    hsLoginForm.bindFromRequest.fold(
@@ -51,7 +47,15 @@ object Application extends Controller {
   def retrieveAllTwitterAccounts(username: String, password: String): Future[SimpleResult] = {
     val hackerSchoolAccounts: Future[Response] = HackerSchoolAPI.scrapeAllTwitterAccounts(username, password)
 
-    val result: Future[SimpleResult] = hackerSchoolAccounts.map(response => Ok(HackerSchoolAPI.generateJSONResponse(response)).as("application/json").withHeaders( "Access-Control-Allow-Origin" -> "*"))
+    val result: Future[SimpleResult] = hackerSchoolAccounts.map(response => Ok(HackerSchoolAPI.generateJSONResponse(response)).as("application/json"))
     result
   }
+
+  def preflight(all: String) = Action {
+    Ok("").withHeaders("Access-Control-Allow-Origin" -> "*",
+      "Allow" -> "*",
+      "Access-Control-Allow-Methods" -> "POST, GET, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers" -> "Origin, X-Requested-With, Content-Type, Accept, Referrer, User-Agent");
+  }
+
 }

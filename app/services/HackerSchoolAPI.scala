@@ -8,8 +8,6 @@ import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import scala.collection.mutable
 import play.api.libs.json.{JsValue, Writes, Json}
-import com.fasterxml.jackson.annotation.JsonValue
-import play.Play
 
 
 object HackerSchoolAPI {
