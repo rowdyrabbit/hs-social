@@ -16,7 +16,7 @@ object Application extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def index = Action {
-    Ok(views.html.index()).withHeaders( "Access-Control-Allow-Origin" -> "*")
+    Ok(views.html.index())
   }
 
   //  def getAllTwitterAccounts() = Action.async {

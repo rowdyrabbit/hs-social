@@ -9,7 +9,6 @@ libraryDependencies ++= Seq(
   anorm,
   cache,
   filters,
-  "ws.securesocial" %% "securesocial" % "2.1.3",
   "org.jsoup" % "jsoup" % "1.7.3"
 )
 

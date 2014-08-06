@@ -3,25 +3,19 @@
 # ~~~~
 
 # Home page
-GET            /                              controllers.Application.index
+GET            /                                      controllers.Application.index
+POST           /login                                 controllers.Application.login
 
-GET            /only-twitter                  controllers.Twitter.onlyTwitter
-
-
-POST           /login                         controllers.Application.login
-
-# Providers entry points
-GET            /authenticate/:provider        securesocial.controllers.ProviderController.authenticate(provider)
-POST           /authenticate/:provider        securesocial.controllers.ProviderController.authenticateByPost(provider)
-GET            /not-authorized                securesocial.controllers.ProviderController.notAuthorized
-
-# Login page
-GET     /login                                securesocial.controllers.LoginPage.login
-GET     /logout                               securesocial.controllers.LoginPage.logout
+GET            /hackerschool/authorization-url        controllers.HackerSchool.getAuthorizationUrl
+GET            /hackerschool/access-token             controllers.HackerSchool.getAccessToken(clientCode)
+GET            /hackerschool/batches/list             controllers.HackerSchool.getAllBatches(accessCode)
 
 
-OPTIONS        /*all                          controllers.Application.preflight(all: String)
+#GET            /hackerschool/authorization-url-2        controllers.HackerSchool.getAuthorizationUrl2
+#GET            /hackerschool/get-access-token           controllers.HackerSchool.getAccessToken2(clientCode)
 
+
+OPTIONS        /*all                                  controllers.Application.preflight(all: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET            /assets/*file                  controllers.Assets.at(path="/public", file)
+GET            /assets/*file                          controllers.Assets.at(path="/public", file)
