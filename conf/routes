@@ -4,15 +4,10 @@
 
 # Home page
 GET            /                                      controllers.Application.index
-POST           /login                                 controllers.Application.login
 
 GET            /hackerschool/authorization-url        controllers.HackerSchool.getAuthorizationUrl
 GET            /hackerschool/access-token             controllers.HackerSchool.getAccessToken(clientCode)
 GET            /hackerschool/batches/list             controllers.HackerSchool.getAllBatches(accessCode)
-
-
-#GET            /hackerschool/authorization-url-2        controllers.HackerSchool.getAuthorizationUrl2
-#GET            /hackerschool/get-access-token           controllers.HackerSchool.getAccessToken2(clientCode)
 
 
 OPTIONS        /*all                                  controllers.Application.preflight(all: String)

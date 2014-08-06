@@ -44,7 +44,6 @@ object HackerSchool extends Controller {
 
 
   private def authenticate(code: String): Future[Response] = {
-
     val url = accessTokenUrl //+ "?client_id=" + consumerKey + "&client_secret=" + consumerSecret + "&code=" + code + "&grant_type=authorization_code"
     val postBody = "client_id=" + consumerKey + "&client_secret=" + consumerSecret + "&code=" + code + "&grant_type=authorization_code&redirect_uri=http://localhost:9002/oauth-redirect.html"
     WS.url(url).withHeaders("Content-Type" -> "application/x-www-form-urlencoded").post(postBody)
