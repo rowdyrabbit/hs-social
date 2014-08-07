@@ -5,6 +5,7 @@ import play.api.libs.ws.WS
 import scala.util.{Try, Failure, Success}
 import scala.concurrent.Future
 import play.api.libs.json.{Json, JsValue}
+import services.TwitterAPI
 
 
 object Twitter extends Controller {
@@ -34,11 +35,11 @@ object Twitter extends Controller {
   def getAllLists(username: String) = Action.async { implicit request =>
     for {
       accessToken <- TwitterOAuth.getAccessToken
-      lists <- getTwitterLists(accessToken, username)
+      lists <- TwitterAPI.getTwitterLists(accessToken, username)
       subscriptions <- getTwitterSubscriptions(accessToken, username)
     } yield {
       lists match {
-        case Success(str) => Ok(str)
+        case Success(l) => Ok(Json.toJson(l))
         case Failure(t)   => InternalServerError(t.getMessage)
       }
     }

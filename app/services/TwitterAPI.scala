@@ -14,16 +14,20 @@ object TwitterAPI {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-//  object GroupType extends Enumeration {
-//    type GroupType = Value
-//    val Subscription, TwitterList = Value
-//  }
-  case class TwitterGroup(id: String, name: String)
+  case class TwitterGroup(id_str: String, name: String)
+
+  implicit val twitterGroupFmt = Json.format[TwitterGroup]
+
 
   implicit val twitterGroupReads: Reads[TwitterGroup] = (
     (JsPath \ "id_str").read[String] and
     (JsPath \ "name").read[String]
     )(TwitterGroup.apply _)
+
+  implicit val twitterGroupWrites: Writes[TwitterGroup] = (
+    (JsPath \ "id").write[String] and
+    (JsPath \ "name").write[String]
+    )(unlift(TwitterGroup.unapply))
 
 
   def getAPIResult(token: String, apiCall: String):Future[Try[JsValue]] = {
@@ -36,20 +40,10 @@ object TwitterAPI {
       })
   }
 
-//  def convertFromJsValueToObject(json: JsValue): Try[TwitterGroup] = {
-//    json.validate[TwitterGroup] match {
-//      case s: JsSuccess[TwitterGroup] => {
-//        Success(s.get)
-//      }
-//      case e: JsError => {
-//        Failure(new RuntimeException("Could not convert JsValue to object"))
-//      }
-//    }
-//  }
-
   def convertFromJsValueToObject(json: Try[JsValue]): Try[TwitterGroup] = {
     json match {
       case Success(v) => {
+        Success(Json.fromJson[Seq[TwitterGroup]](v))
         v.validate[TwitterGroup] match {
           case s: JsSuccess[TwitterGroup] => {
             Success(s.get)
@@ -61,18 +55,12 @@ object TwitterAPI {
       }
       case Failure(t) => Failure(t)
     }
-
   }
 
   def getTwitterLists(token: String, username: String):Future[Try[TwitterGroup]] = {
     val result:Future[Try[JsValue]] = getAPIResult(token, "https://api.twitter.com/1.1/lists/list.json?screen_name=" + username)
 
-    result.map(x => convertFromJsValueToObject(x))
-//
-//    for {
-//      result <- getAPIResult(token, "https://api.twitter.com/1.1/lists/list.json?screen_name=" + username)
-//      objResult <- convertFromJsValueToObject(result)
-//    } yield objResult
+    result.map( x => convertFromJsValueToObject(x))
 
   }
 
