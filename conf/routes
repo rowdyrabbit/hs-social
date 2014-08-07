@@ -9,6 +9,9 @@ GET            /hackerschool/authorization-url        controllers.HackerSchool.g
 GET            /hackerschool/access-token             controllers.HackerSchool.getAccessToken(clientCode)
 GET            /hackerschool/batches/list             controllers.HackerSchool.getAllBatches(accessCode)
 
+GET            /twitter/list/all                      controllers.Twitter.getAllLists(username)
+GET            /twitter/list/intersection             controllers.Twitter.getIntersection(listId)
+
 
 OPTIONS        /*all                                  controllers.Application.preflight(all: String)
 

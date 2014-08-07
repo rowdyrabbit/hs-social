@@ -6,7 +6,9 @@ object Application extends Controller {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-  def index = Action {
+  def index = Action {implicit request =>
+    val authJSON = TwitterOAuth.getApplicationAccessToken
+//    println("auth json: " + authJSON)
     Ok(views.html.index())
   }
 
