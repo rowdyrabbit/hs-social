@@ -11,6 +11,8 @@ object TwitterAPI {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
   case class TwitterGroup(id: String, name: String)
 
+  case class TwitterUser(username: String, name: String)
+
   implicit val twitterGroupReads: Reads[TwitterGroup] = (
     (JsPath \ "id_str").read[String] and
     (JsPath \ "name").read[String]
@@ -40,10 +42,15 @@ object TwitterAPI {
 
   def getTwitterLists(token: String, username: String):Future[Seq[TwitterGroup]] = {
     val result:Future[JsValue] = getAPIResult(token, "https://api.twitter.com/1.1/lists/list.json?screen_name=" + username)
-
     result.map( x => convertFromListJsValueToObject(x))
   }
 
 
-  def getIntersection(listId: String) = play.mvc.Results.TODO
+  def getRecommendations(listId: String, userId: String) = play.mvc.Results.TODO
+  //Get all the members of the list - 1 API call
+  //Get all the people that those members follow (n API calls)
+  //Count occurrences of each of those people
+  //Return a list of all the people who are followed by at least 2 members of the group
+
+
 }

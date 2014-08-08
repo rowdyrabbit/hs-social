@@ -23,5 +23,5 @@ object Twitter extends Controller {
     }
   }
 
-  def getIntersection(listId: String) = play.mvc.Results.TODO
+  def getRecommendations(listId: String, username: String) = play.mvc.Results.TODO
 }
